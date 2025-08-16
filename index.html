@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Presença</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent-color: #f97316;
+            --accent-hover: #ea580c;
+            --card-bg: #1e293b;
+            --text-primary: #ffffff;
+            --text-secondary: #e2e8f0;
+            --border-color: #334155;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary) !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        .nav-link {
+            color: var(--text-primary) !important;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            opacity: 1;
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+            color: var(--text-primary);
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.75rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            background-color: rgba(249, 115, 22, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(249, 115, 22, 0.1);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--accent-color);
+            background-color: rgba(249, 115, 22, 0.15);
+        }
+        
+        .upload-area h5 {
+            color: var(--text-primary);
+        }
+        
+        .upload-area p {
+            color: var(--text-secondary);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            color: white;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 2rem;
+            font-size: 1.125rem;
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+        
+        .stats-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            color: white;
+        }
+        
+        /* Sector Badges */
+        .sector-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+            color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Tables */
+        .table-container {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: var(--secondary-bg);
+        }
+        
+        .table {
+            color: var(--text-primary);
+            margin-bottom: 0;
+            background-color: var(--secondary-bg);
+        }
+        
+        .table thead th {
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            background-color: var(--secondary-bg);
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(249, 115, 22, 0.1);
+        }
+        
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: var(--text-primary);
+            background-color: var(--secondary-bg);
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+        
+        /* Alerts */
+        .alert {
+            border-radius: 0.5rem;
+            border: none;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Debug Info */
+        .debug-info {
+            background-color: var(--secondary-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .debug-info h6 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .debug-info p {
+            color: var(--text-primary);
+        }
+        
+        .debug-info ul {
+            color: var(--text-primary);
+        }
+        
+        .debug-info li {
+            color: var(--text-primary);
+        }
+        
+        .debug-info strong {
+            color: var(--text-primary);
+        }
+        
+        /* Badges */
+        .badge {
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            .table {
+                min-width: 500px;
+            }
+            
+            .btn-lg {
+                padding: 0.625rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            
+            .stats-number {
+                font-size: 1.75rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Mobile Menu */
+        .navbar-collapse {
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+        
+        /* Text secondary class */
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+        
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        .text-center p {
+            color: var(--text-secondary);
+        }
+        
+        .small {
+            color: var(--text-secondary);
+        }
+        
+        /* Custom file input button fix */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-clipboard-check"></i>
+                Sistema de Presença
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-house-door me-1"></i> Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-file-earmark-text me-1"></i> Relatórios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-gear me-1"></i> Configurações</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Upload Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Importar Planilha</h5>
+            </div>
+            <div class="card-body">
+                <div class="upload-area" id="uploadArea">
+                    <i class="bi bi-file-earmark-spreadsheet upload-icon"></i>
+                    <h5>Arraste sua planilha XLS para cá</h5>
+                    <p class="text-secondary">ou</p>
+                    <div class="file-input-wrapper">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-folder2-open me-2"></i>Selecionar Arquivo
+                        </button>
+                        <input type="file" id="fileInput" accept=".xls,.xlsx">
+                    </div>
+                    <p class="mt-3 text-secondary small">A planilha deve conter: Timestamp (A1), NOME E SOBRENOME (B1), SETOR (C1)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Stats Row -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="stats-card fade-in">
+                        <div class="stats-number" id="totalPresentes">0</div>
+                        <div class="stats-label">Total de Presentes</div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-building me-2"></i>Presentes por Setor</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="setoresContainer" class="d-flex flex-wrap">
+                                <!-- Setores serão adicionados dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Names List -->
+            <div class="card fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Lista de Presentes</h5>
+                    <span class="badge bg-secondary" id="totalNomes">0 nomes</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Setor</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nomesTableBody">
+                                <!-- Nomes serão adicionados dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Similar Names Button -->
+            <div class="text-center my-4">
+                <button id="buscarSemelhantesBtn" class="btn btn-primary btn-lg">
+                    <i class="bi bi-search me-2"></i>Buscar Nomes Semelhantes
+                </button>
+            </div>
+
+            <!-- Similar Names Results -->
+            <div id="semelhantesSection" class="card hidden fade-in">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Nomes Semelhantes Encontrados</h5>
+                </div>
+                <div class="card-body">
+                    <div id="semelhantesContainer">
+                        <!-- Resultados de semelhança serão adicionados aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="alert alert-danger hidden fade-in" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <span id="errorText"></span>
+            <div id="debugInfo" class="debug-info hidden">
+                <h6>Informações de Depuração:</h6>
+                <div id="debugContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const resultsSection = document.getElementById('resultsSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const debugInfo = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+            const buscarSemelhantesBtn = document.getElementById('buscarSemelhantesBtn');
+            const semelhantesSection = document.getElementById('semelhantesSection');
+            
+            let planilhaData = [];
+            
+            // Event listeners para upload
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                uploadArea.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                uploadArea.classList.remove('dragover');
+            }
+            
+            uploadArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            
+            function handleFileSelect(e) {
+                const files = e.target.files;
+                handleFiles(files);
+            }
+            
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) {
+                        processExcelFile(file);
+                    } else {
+                        showError('Por favor, selecione um arquivo Excel (.xls ou .xlsx)');
+                    }
+                }
+            }
+            
+            function processExcelFile(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        
+                        // Verificar se a planilha tem dados
+                        if (jsonData.length < 1) {
+                            showError('A planilha está vazia ou não contém dados.');
+                            return;
+                        }
+                        
+                        // Obter os cabeçalhos da primeira linha
+                        const headers = jsonData[0];
+                        
+                        // Normalizar os cabeçalhos esperados para comparação
+                        const expectedHeaders = [
+                            'timestamp',
+                            'nome e sobrenome',
+                            'setor'
+                        ];
+                        
+                        // Normalizar os cabeçalhos encontrados (remover espaços, converter para minúsculas)
+                        const normalizedHeaders = headers.map(header => 
+                            header ? header.toString().trim().toLowerCase() : ''
+                        );
+                        
+                        // Verificar se temos pelo menos 3 colunas
+                        if (normalizedHeaders.length < 3) {
+                            showError(`A planilha deve ter pelo menos 3 colunas. Foram encontradas apenas ${normalizedHeaders.length} colunas.`);
+                            showDebugInfo(headers, normalizedHeaders);
+                            return;
+                        }
+                        
+                        // Verificar se os cabeçalhos correspondem (de forma flexível)
+                        const headerValidation = [
+                            normalizedHeaders[0].includes('timestamp') || normalizedHeaders[0].includes('data') || normalizedHeaders[0].includes('time'),
+                            normalizedHeaders[1].includes('nome') || normalizedHeaders[1].includes('name'),
+                            normalizedHeaders[2].includes('setor') || normalizedHeaders[2].includes('departamento') || normalizedHeaders[2].includes('area')
+                        ];
+                        
+                        if (!headerValidation.every(valid => valid)) {
+                            showError('A planilha não segue o formato esperado. Verifique se as colunas são: Timestamp (A1), NOME E SOBRENOME (B1), SETOR (C1)');
+                            showDebugInfo(headers, normalizedHeaders);
+                            return;
+                        }
+                        
+                        // Extrair dados (ignorando a primeira linha de cabeçalho)
+                        planilhaData = [];
+                        for (let i = 1; i < jsonData.length; i++) {
+                            if (jsonData[i][1]) { // Verificar se há nome
+                                planilhaData.push({
+                                    timestamp: jsonData[i][0] || '',
+                                    nome: jsonData[i][1] || '',
+                                    setor: jsonData[i][2] || 'Não informado'
+                                });
+                            }
+                        }
+                        
+                        // Exibir resultados
+                        displayResults();
+                        hideError();
+                    } catch (err) {
+                        showError('Erro ao processar o arquivo: ' + err.message);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+            
+            function showDebugInfo(headers, normalizedHeaders) {
+                debugContent.innerHTML = `
+                    <p><strong>Cabeçalhos encontrados na planilha:</strong></p>
+                    <ul>
+                        <li>A1: "${headers[0] || '(vazio)'}" (normalizado: "${normalizedHeaders[0]}")</li>
+                        <li>B1: "${headers[1] || '(vazio)'}" (normalizado: "${normalizedHeaders[1]}")</li>
+                        <li>C1: "${headers[2] || '(vazio)'}" (normalizado: "${normalizedHeaders[2]}")</li>
+                    </ul>
+                    <p><strong>Cabeçalhos esperados:</strong></p>
+                    <ul>
+                        <li>A1: "Timestamp" (ou variações como "Data", "Time")</li>
+                        <li>B1: "NOME E SOBRENOME" (ou variações como "Nome", "Name")</li>
+                        <li>C1: "SETOR" (ou variações como "Departamento", "Área")</li>
+                    </ul>
+                `;
+                debugInfo.classList.remove('hidden');
+            }
+            
+            function displayResults() {
+                // Calcular estatísticas
+                const totalPresentes = planilhaData.length;
+                
+                // Agrupar por setor
+                const setores = {};
+                planilhaData.forEach(item => {
+                    if (!setores[item.setor]) {
+                        setores[item.setor] = 0;
+                    }
+                    setores[item.setor]++;
+                });
+                
+                // Exibir estatísticas
+                document.getElementById('totalPresentes').textContent = totalPresentes;
+                
+                // Exibir setores
+                const setoresContainer = document.getElementById('setoresContainer');
+                setoresContainer.innerHTML = '';
+                
+                const coresSetores = [
+                    '#f97316', '#ef4444', '#8b5cf6', '#3b82f6', '#10b981',
+                    '#f59e0b', '#ec4899', '#06b6d4', '#6366f1', '#84cc16'
+                ];
+                
+                let corIndex = 0;
+                for (const [setor, quantidade] of Object.entries(setores)) {
+                    const badge = document.createElement('span');
+                    badge.className = 'sector-badge';
+                    badge.style.backgroundColor = coresSetores[corIndex % coresSetores.length];
+                    badge.textContent = `${setor}: ${quantidade}`;
+                    setoresContainer.appendChild(badge);
+                    corIndex++;
+                }
+                
+                // Exibir lista de nomes
+                const nomesTableBody = document.getElementById('nomesTableBody');
+                nomesTableBody.innerHTML = '';
+                
+                planilhaData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.nome}</td>
+                        <td>${item.setor}</td>
+                        <td>${item.timestamp}</td>
+                    `;
+                    nomesTableBody.appendChild(row);
+                });
+                
+                document.getElementById('totalNomes').textContent = `${totalPresentes} nomes`;
+                
+                // Mostrar seção de resultados
+                resultsSection.classList.remove('hidden');
+                
+                // Esconder seção de semelhantes
+                semelhantesSection.classList.add('hidden');
+            }
+            
+            // Buscar nomes semelhantes
+            buscarSemelhantesBtn.addEventListener('click', function() {
+                const semelhantesContainer = document.getElementById('semelhantesContainer');
+                semelhantesContainer.innerHTML = '';
+                
+                // Array para armazenar os grupos de semelhança
+                const gruposSemelhantes = [];
+                const nomesProcessados = new Set();
+                
+                // Função para verificar se dois nomes têm palavras em comum
+                function temPalavrasEmComum(nome1, nome2) {
+                    if (nome1 === nome2) return false;
+                    
+                    const palavras1 = nome1.toLowerCase().split(/\s+/);
+                    const palavras2 = nome2.toLowerCase().split(/\s+/);
+                    
+                    // Verificar se há pelo menos uma palavra em comum
+                    for (const palavra1 of palavras1) {
+                        if (palavra1.length > 2) { // Ignorar palavras muito curtas
+                            for (const palavra2 of palavras2) {
+                                if (palavra1 === palavra2) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    
+                    return false;
+                }
+                
+                // Encontrar grupos de nomes semelhantes
+                for (let i = 0; i < planilhaData.length; i++) {
+                    const nomeAtual = planilhaData[i].nome;
+                    
+                    if (nomesProcessados.has(nomeAtual)) continue;
+                    
+                    const grupo = [planilhaData[i]];
+                    nomesProcessados.add(nomeAtual);
+                    
+                    for (let j = i + 1; j < planilhaData.length; j++) {
+                        const nomeComparar = planilhaData[j].nome;
+                        
+                        if (!nomesProcessados.has(nomeComparar) && temPalavrasEmComum(nomeAtual, nomeComparar)) {
+                            grupo.push(planilhaData[j]);
+                            nomesProcessados.add(nomeComparar);
+                        }
+                    }
+                    
+                    if (grupo.length > 1) {
+                        gruposSemelhantes.push(grupo);
+                    }
+                }
+                
+                // Exibir resultados
+                if (gruposSemelhantes.length === 0) {
+                    semelhantesContainer.innerHTML = '<p class="text-center text-secondary">Nenhum nome semelhante encontrado.</p>';
+                } else {
+                    gruposSemelhantes.forEach((grupo, index) => {
+                        const grupoDiv = document.createElement('div');
+                        grupoDiv.className = 'mb-4';
+                        
+                        const titulo = document.createElement('h6');
+                        titulo.className = 'mb-3';
+                        titulo.style.color = 'var(--accent-color)';
+                        titulo.textContent = `Grupo ${index + 1} (${grupo.length} nomes)`;
+                        grupoDiv.appendChild(titulo);
+                        
+                        const tabela = document.createElement('table');
+                        tabela.className = 'table table-sm table-striped';
+                        
+                        const thead = document.createElement('thead');
+                        thead.innerHTML = `
+                            <tr>
+                                <th>Nome</th>
+                                <th>Setor</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        `;
+                        tabela.appendChild(thead);
+                        
+                        const tbody = document.createElement('tbody');
+                        grupo.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.nome}</td>
+                                <td>${item.setor}</td>
+                                <td>${item.timestamp}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        tabela.appendChild(tbody);
+                        
+                        grupoDiv.appendChild(tabela);
+                        semelhantesContainer.appendChild(grupoDiv);
+                    });
+                }
+                
+                // Mostrar seção de semelhantes
+                semelhantesSection.classList.remove('hidden');
+            });
+            
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.classList.remove('hidden');
+            }
+            
+            function hideError() {
+                errorMessage.classList.add('hidden');
+                debugInfo.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
