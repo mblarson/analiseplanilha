@@ -1216,44 +1216,44 @@
                     // Configurações de estilo
                     const pageWidth = doc.internal.pageSize.getWidth();
                     const pageHeight = doc.internal.pageSize.getHeight();
-                    const margin = 20;
+                    const margin = 15;
                     let yPosition = margin;
                     
-                    // Cabeçalho
-                    doc.setFillColor(15, 23, 42); // Cor de fundo do cabeçalho
-                    doc.rect(0, 0, pageWidth, 40, 'F');
+                    // Cabeçalho compacto
+                    doc.setFillColor(15, 23, 42);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
                     
-                    doc.setTextColor(255, 255, 255); // Texto branco
-                    doc.setFontSize(24);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('Relatório de Presença', pageWidth / 2, 25, { align: 'center' });
-                    
-                    // Data atual
-                    const dataAtual = new Date().toLocaleDateString('pt-BR');
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'normal');
-                    doc.text(`Data: ${dataAtual}`, pageWidth - margin, 15, { align: 'right' });
-                    
-                    yPosition += 50;
-                    
-                    // Total de presentes
                     doc.setTextColor(255, 255, 255);
-                    doc.setFillColor(249, 115, 22); // Cor de fundo do card de estatísticas
-                    doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 30, 5, 5, 'F');
-                    
-                    doc.setFontSize(18);
+                    doc.setFontSize(20);
                     doc.setFont(undefined, 'bold');
-                    doc.text(`Total de Presentes: ${planilhaData.length}`, pageWidth / 2, yPosition + 20, { align: 'center' });
+                    doc.text('Relatório de Presença', pageWidth / 2, 20, { align: 'center' });
                     
-                    yPosition += 50;
+                    // Data atual no cabeçalho
+                    const dataAtual = new Date().toLocaleDateString('pt-BR');
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Data: ${dataAtual}`, pageWidth - margin, 10, { align: 'right' });
+                    
+                    yPosition += 40;
+                    
+                    // Total de presentes compacto
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFillColor(249, 115, 22);
+                    doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 20, 3, 3, 'F');
+                    
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Total de Presentes: ${planilhaData.length}`, pageWidth / 2, yPosition + 13, { align: 'center' });
+                    
+                    yPosition += 30;
                     
                     // Título da seção de ranking
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(16);
+                    doc.setFontSize(14);
                     doc.setFont(undefined, 'bold');
                     doc.text('Ranking por Setor', margin, yPosition);
                     
-                    yPosition += 15;
+                    yPosition += 10;
                     
                     // Converter para array e ordenar por quantidade (decrescente)
                     const setoresArray = Object.entries(setoresData)
@@ -1263,59 +1263,55 @@
                     // Calcular total para porcentagens
                     const total = planilhaData.length;
                     
-                    // Exibir ranking no PDF
+                    // Exibir ranking no PDF de forma compacta
                     setoresArray.forEach((item, index) => {
                         const percentage = total > 0 ? ((item.quantidade / total) * 100).toFixed(1) : 0;
                         
-                        // Verificar se precisamos de uma nova página
-                        if (yPosition > pageHeight - 40) {
+                        // Verificar se precisamos de uma nova página (com margem de segurança maior)
+                        if (yPosition > pageHeight - 25) {
                             doc.addPage();
                             yPosition = margin;
                         }
                         
-                        // Fundo do item do ranking
-                        doc.setFillColor(30, 41, 59); // Cor de fundo do item
-                        doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 25, 3, 3, 'F');
+                        // Fundo do item do ranking compacto
+                        doc.setFillColor(30, 41, 59);
+                        doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 18, 2, 2, 'F');
                         
-                        // Posição
-                        doc.setTextColor(249, 115, 22); // Cor laranja para a posição
-                        doc.setFontSize(16);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(`#${index + 1}`, margin + 10, yPosition + 17);
-                        
-                        // Setor e quantidade
-                        doc.setTextColor(255, 255, 255); // Texto branco
-                        doc.setFontSize(14);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(item.setor, margin + 30, yPosition + 12);
-                        
+                        // Posição compacta
+                        doc.setTextColor(249, 115, 22);
                         doc.setFontSize(12);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`#${index + 1}`, margin + 8, yPosition + 12);
+                        
+                        // Setor e quantidade na mesma linha
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(item.setor, margin + 25, yPosition + 8);
+                        
+                        doc.setFontSize(9);
                         doc.setFont(undefined, 'normal');
-                        doc.text(`${item.quantidade} pessoas`, margin + 30, yPosition + 22);
+                        doc.text(`${item.quantidade} pessoas`, margin + 25, yPosition + 15);
                         
                         // Porcentagem
-                        doc.setTextColor(249, 115, 22); // Cor laranja para a porcentagem
-                        doc.setFontSize(14);
+                        doc.setTextColor(249, 115, 22);
+                        doc.setFontSize(11);
                         doc.setFont(undefined, 'bold');
-                        doc.text(`${percentage}%`, pageWidth - margin - 10, yPosition + 17, { align: 'right' });
+                        doc.text(`${percentage}%`, pageWidth - margin - 8, yPosition + 12, { align: 'right' });
                         
-                        yPosition += 35;
+                        yPosition += 22; // Espaçamento reduzido entre itens
                     });
                     
                     // Rodapé
-                    const pageCount = doc.internal.getNumberOfPages();
-                    for (let i = 1; i <= pageCount; i++) {
-                        doc.setPage(i);
-                        doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(10);
-                        doc.setFont(undefined, 'normal');
-                        doc.text(
-                            `Página ${i} de ${pageCount}`,
-                            pageWidth / 2,
-                            pageHeight - 10,
-                            { align: 'center' }
-                        );
-                    }
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(8);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(
+                        'Sistema de Presença',
+                        pageWidth / 2,
+                        pageHeight - 8,
+                        { align: 'center' }
+                    );
                     
                     // Salvar o PDF
                     doc.save('relatorio_presenca.pdf');
